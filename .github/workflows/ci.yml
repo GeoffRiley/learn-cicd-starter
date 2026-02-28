@@ -20,6 +20,9 @@ jobs:
 
       - name: Run tests
         run: (go test -cover ./...)
+
+      - name: GoSec
+        run: (gosec ./...)
   style:
     name: Style
     runs-on: ubuntu-latest
@@ -44,6 +47,3 @@ jobs:
 
       - name: Staticcheck
         run: (staticcheck ./...)
-
-      - name: GoSec
-        run: (gosec ./...)
