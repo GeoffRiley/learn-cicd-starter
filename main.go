@@ -7,6 +7,8 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
+	"unicode"
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/cors"
@@ -16,6 +18,34 @@ import (
 
 	_ "github.com/tursodatabase/libsql-client-go/libsql"
 )
+
+func isOnlyDigits(s string) bool {
+	if s == "" {
+		return false
+	}
+	for _, r := range s {
+		if !unicode.IsDigit(r) {
+			return false
+		}
+	}
+	return true
+}
+
+func isOnlyLetters(s string) bool {
+	if s == "" {
+		return false
+	}
+	for _, r := range s {
+		if !unicode.IsLetter(r) {
+			return false
+		}
+	}
+	return true
+}
+
+func isOnlyDigitsOrLetters(s string) bool {
+	return isOnlyDigits(s) || isOnlyLetters(s)
+}
 
 type apiConfig struct {
 	DB *database.Queries
@@ -33,6 +63,9 @@ func main() {
 	port := os.Getenv("PORT")
 	if port == "" {
 		log.Fatal("PORT environment variable is not set")
+	}
+	if !isOnlyDigitsOrLetters(port) {
+		log.Fatal("PORT environment variable contains bad characters")
 	}
 
 	apiCfg := apiConfig{}
@@ -89,10 +122,11 @@ func main() {
 
 	router.Mount("/v1", v1Router)
 	srv := &http.Server{
-		Addr:    ":" + port,
-		Handler: router,
+		Addr:              ":" + port,
+		Handler:           router,
+		ReadHeaderTimeout: 5 * time.Second,
 	}
 
-	log.Printf("Serving on port: %s\n", port)
+	log.Printf("Serving on port: %s\n", port) //#nosec G706
 	log.Fatal(srv.ListenAndServe())
 }

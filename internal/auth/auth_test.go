@@ -10,8 +10,8 @@ func TestGetAPIKey(t *testing.T) {
 		name      string
 		headerVal string
 		wantKey   string
-		wantErr   error   // for sentinel errors
-		errSubstr string  // for non-sentinel errors (like "malformed ...")
+		wantErr   error  // for sentinel errors
+		errSubstr string // for non-sentinel errors (like "malformed ...")
 	}{
 		{
 			name:      "missing header returns ErrNoAuthHeaderIncluded",
