@@ -19,9 +19,10 @@ jobs:
           go-version: "1.25.1"
 
       - name: Build the app
-        run: (./scripts/buildprod.sh)
+        run: ./scripts/buildprod.sh
 
-      - id: 'auth'
+      - name: Authenticate to Google Cloud
+        id: 'auth'
         uses: 'google-github-actions/auth@v2'
         with:
           credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
@@ -32,4 +33,4 @@ jobs:
           version: '>= 363.0.0'
 
       - name: Build image and push to Google Artifact Registry
-        run: (gcloud builds submit --tag europe-west2-docker.pkg.dev/singular-citron-488902-q4/notely-ar-repo/notely:latest .)
+        run: gcloud builds submit --tag europe-west2-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/notely-ar-repo/notely:${{ github.sha }} .
